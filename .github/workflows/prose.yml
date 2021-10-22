@@ -8,15 +8,6 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
     steps:
       - uses: actions/checkout@v1
-      - name: Prepare repo - push event
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          git checkout "${GITHUB_REF:11}" --
-          git remote rm origin
-          git remote add origin "https://understood-devops-2:$GH_TOKEN@github.com/understood/prose.git"
-          git fetch origin --tags
-          git branch --set-upstream-to origin/${GITHUB_REF:11} ${GITHUB_REF:11}
       - name: Caching emblem
         id: caching-emblem
         uses: actions/cache@v2
