@@ -14,8 +14,8 @@ jobs:
         with:
           path: |
             packages/pack1/dist
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-      - name: Generate Prime Numbers
+          key: ${{ runner.os }}-${{ hashFiles('packages/pack1/dist/**') }}
+      - name: Generate new emblem dist
         if: steps.caching-emblem.outputs.cache-hit != 'true'
         working-directory: packages/pack1/
         run: |
