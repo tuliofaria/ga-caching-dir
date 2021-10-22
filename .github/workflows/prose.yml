@@ -1,0 +1,32 @@
+name: Release
+
+on: [push]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+    steps:
+      - uses: actions/checkout@v1
+      - name: Prepare repo - push event
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          git checkout "${GITHUB_REF:11}" --
+          git remote rm origin
+          git remote add origin "https://understood-devops-2:$GH_TOKEN@github.com/understood/prose.git"
+          git fetch origin --tags
+          git branch --set-upstream-to origin/${GITHUB_REF:11} ${GITHUB_REF:11}
+      - name: Caching emblem
+        id: caching-emblem
+        uses: actions/cache@v2
+        with:
+          path: |
+            packages/pack1/dist
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Generate Prime Numbers
+        if: steps.caching-emblem.outputs.cache-hit != 'true'
+        working-directory: packages/pack1/
+        run: |
+          npm install
+          npm run build
